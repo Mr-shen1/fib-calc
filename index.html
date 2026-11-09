@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0e14">
+<title>斐波那契位计算器</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0b0e14;color:#e6e9ef;font:15px/1.5 -apple-system,"PingFang SC",system-ui,sans-serif;padding:16px 14px 70px}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:19px;margin:0 0 4px;letter-spacing:.5px}
+.sub{color:#8b93a5;font-size:12.5px;margin:0 0 14px}
+.card{background:#141922;border:1px solid #1f2633;border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:12px;margin:0 0 10px;color:#9aa4b8;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+label{display:block;font-size:11.5px;color:#7f8899}
+label.span2{grid-column:1/-1}
+input{width:100%;margin-top:4px;background:#0d1219;border:1px solid #263041;color:#e6e9ef;border-radius:9px;padding:10px;font-size:16px;font-variant-numeric:tabular-nums}
+input:focus{outline:none;border-color:#e8b34a}
+.row{display:flex;gap:8px;margin-top:12px}
+button{flex:1;background:#e8b34a;color:#171206;border:0;border-radius:10px;padding:12px;font-size:15px;font-weight:700;font-family:inherit}
+button.ghost{background:#1b2230;color:#c7cfdd;font-weight:500;font-size:13px}
+.err{color:#ef6b6b;font-size:13px;margin-top:10px}
+.judge{font-size:13.5px;color:#c3cbd9;line-height:1.65}
+.judge b{color:#e8b34a}
+.judge .k{color:#3fcf9a}
+.judge .r{color:#ef6b6b}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:#0d1219;border:1px solid #263041;border-radius:8px;padding:6px 9px;font-size:11.5px;color:#98a2b4;font-variant-numeric:tabular-nums}
+.chip b{color:#e6e9ef;font-weight:600}
+.ladder{display:flex;flex-direction:column;gap:1px}
+.lv{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:#10151d}
+.lv.hot{background:#1a2030;box-shadow:inset 3px 0 0 #e8b34a}
+.price{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;min-width:56px;text-align:right}
+.lv.sup .price{color:#3fcf9a}
+.lv.res .price{color:#ef6b6b}
+.lv.ext .price{color:#b98cf0}
+.meta{flex:1;font-size:11.5px;color:#8b93a5;min-width:0}
+.meta .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.meta .d{font-variant-numeric:tabular-nums;color:#6d7688}
+.st{font-size:10px;color:#e8b34a;letter-spacing:-1px;min-width:44px;text-align:right}
+.zone{display:flex;align-items:center;gap:10px;padding:9px 10px;background:#10151d;border-radius:9px;margin-bottom:6px}
+.zone .zp{font-size:15px;font-weight:700;color:#e8b34a;font-variant-numeric:tabular-nums}
+.zone .zi{flex:1;font-size:11.5px;color:#8b93a5}
+.zone .zs{font-size:11px;color:#e8b34a;letter-spacing:-1px}
+#chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:12px;font-size:11px;color:#7f8899;margin-top:8px;flex-wrap:wrap}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.foot{font-size:11px;color:#5d6577;text-align:center;margin-top:18px;line-height:1.7}
+.fibh{display:grid;grid-template-columns:46px 1fr 58px 58px;gap:6px;font-size:10.5px;color:#5d6577;padding:0 9px 6px}
+.fibh span:nth-child(3),.fibh span:nth-child(4){text-align:right}
+.fib{display:grid;grid-template-columns:46px 1fr 58px 58px;gap:6px;align-items:center;padding:10px 9px;border-radius:8px;background:#10151d;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.fib .r{font-size:11.5px;color:#7f8899}
+.fib .p{font-size:15.5px;font-weight:700;color:#3fcf9a}
+.fib .a{font-size:11px;color:#8b93a5;text-align:right}
+.fib.key{background:#1a2030;box-shadow:inset 3px 0 0 #e8b34a}
+.fib.key .p{color:#e8b34a}
+.fib.key .r{color:#e8b34a}
+.seg{display:flex;background:#0d1219;border:1px solid #263041;border-radius:10px;padding:3px;gap:3px;margin-bottom:11px}
+.seg button{flex:1;background:transparent;color:#8b93a5;border:0;border-radius:8px;padding:9px 0;font-size:12.5px;font-weight:500}
+.seg button.on{background:#e8b34a;color:#171206;font-weight:700}
+.trow{display:grid;grid-template-columns:40px 1fr 1.25fr;gap:8px;align-items:center;padding:9px;border-radius:8px;background:#10151d;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.trow.hit{background:#1a2030;box-shadow:inset 3px 0 0 #e8b34a}
+.trow .k{font-size:12px;color:#7f8899}
+.trow .tm{font-size:12.5px;color:#c3cbd9}
+.trow .pr{font-size:12.5px;color:#3fcf9a;text-align:right}
+.trow .pr em{font-style:normal;color:#e8b34a;font-size:10.5px;display:block}
+.bar{height:7px;background:#0d1219;border-radius:4px;overflow:hidden;margin:8px 0 6px;border:1px solid #1f2633}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#3fcf9a,#e8b34a)}
+.hint{font-size:11px;color:#5d6577;margin:8px 2px 0;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>斐波那契位计算器</h1>
+  <p class="sub">只填起涨点与高点即可算回撤支撑；补上回调低点，还能算反弹压力与重叠区</p>
+
+  <section class="card">
+    <div class="grid">
+      <label>A 起涨低点<input id="a" type="number" step="0.01" inputmode="decimal" placeholder="如 131.90"></label>
+      <label>B 波段高点<input id="b" type="number" step="0.01" inputmode="decimal" placeholder="如 157.78"></label>
+      <label>C 回调低点（可空）<input id="c" type="number" step="0.01" inputmode="decimal" placeholder="留空 = 只算回撤位"></label>
+      <label>D 反弹高点（可空）<input id="d" type="number" step="0.01" inputmode="decimal" placeholder="自动 = 0.618"></label>
+      <label class="span2">当前价（可选，用于算距离）<input id="p" type="number" step="0.01" inputmode="decimal" placeholder="填入现价显示百分比"></label>
+    </div>
+    <div class="row">
+      <button style="flex:1.6" onclick="calc()">计算</button>
+      <button class="ghost" onclick="preset()">示例</button>
+      <button class="ghost" onclick="autoC()">C=0.618</button>
+    </div>
+    <div id="err" class="err" style="display:none"></div>
+  </section>
+
+  <section class="card" id="cardEmpty">
+    <h2>怎么用</h2>
+    <div class="judge">
+      <b>只算回撤支撑</b>：填 A 起涨低点 + B 波段高点，点「计算」。<br>
+      <b>再加反弹压力</b>：填 C 回调低点（可点「C=0.618」自动填）。<br>
+      <b>再加回落目标</b>：填 D 反弹高点（留空则按下跌段 0.618 自动取）。<br>
+      <span style="color:#6d7688">不确定填什么？点「示例」看一组演示数据。</span>
+    </div>
+  </section>
+
+  <section class="card" id="cardJudge" style="display:none">
+    <h2>结构判读</h2>
+    <div class="judge" id="judge"></div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section class="card" id="cardChart" style="display:none">
+    <h2>走势示意</h2>
+    <svg id="chart" viewBox="0 0 340 190" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="legend" id="legend">
+      <span><i class="dot" style="background:#ef6b6b"></i>压力位</span>
+      <span><i class="dot" style="background:#3fcf9a"></i>支撑位</span>
+      <span><i class="dot" style="background:#e8b34a"></i>重叠区 ★越多越强</span>
+    </div>
+  </section>
+
+  <section class="card" id="cardFib" style="display:none">
+    <h2>回撤支撑位 · 由 A→B 波段计算</h2>
+    <div class="fibh"><span>比例</span><span>价位</span><span>自高点</span><span>距现价</span></div>
+    <div id="fibList"></div>
+    <p class="hint">金色 = 常用关键位。0.5 与 0.618 是最常见的止跌区；跌破 1.0（起涨点）则整个结构作废。</p>
+  </section>
+
+  <section class="card" id="cardZones" style="display:none">
+    <h2>关键重叠区（多算法指向同一价格带）</h2>
+    <div id="zones"></div>
+  </section>
+
+  <section class="card" id="cardLadder" style="display:none">
+    <h2>价格阶梯</h2>
+    <div class="ladder" id="ladder"></div>
+  </section>
+
+  <section class="card" id="cardTime">
+    <h2>时间维度 · 变盘窗口</h2>
+    <div class="seg" id="tfSeg">
+      <button data-tf="15" onclick="setTF('15')">15分</button>
+      <button data-tf="30" onclick="setTF('30')">30分</button>
+      <button data-tf="60" onclick="setTF('60')">60分</button>
+      <button data-tf="d" class="on" onclick="setTF('d')">日K</button>
+      <button data-tf="w" onclick="setTF('w')">周K</button>
+    </div>
+    <div class="grid">
+      <label>上涨段根数<input id="n1" type="number" step="1" inputmode="numeric" placeholder="如 37"></label>
+      <label>下跌段根数<input id="n2" type="number" step="1" inputmode="numeric" placeholder="如 21"></label>
+      <label>反弹段根数<input id="n3" type="number" step="1" inputmode="numeric" placeholder="可空"></label>
+      <label>D 点时刻（可选）<input id="dtime" type="datetime-local"></label>
+    </div>
+    <div class="row"><button onclick="renderTime()">计算时间窗</button></div>
+    <div id="timeOut"></div>
+    <p class="hint">根数按 K 线数量数（含跨日连续计算，不含午休与隔夜）。切换周期后需重新填根数，因为各周期的根数不同。</p>
+  </section>
+
+  <p class="foot">数值仅供参考，需结合量能、均线、筹码与大盘环境。<br>跌破起涨点则整个结构作废，请切换到更大周期重新量。</p>
+</div>
+<script>
+/* 斐波那契位计算器 */
+const $ = id => document.getElementById(id);
+const num = id => { const s = $(id).value.trim(); if (s === '') return null; const n = parseFloat(s); return isFinite(n) ? n : null; };
+const fmt = n => n.toFixed(2);
+const pfmt = v => (v > 0 ? '+' : '') + v.toFixed(2) + '%';
+const pct = (a, b) => ((a - b) / b * 100);
+
+function preset() { $('a').value = 10; $('b').value = 16; $('c').value = 12.29; $('d').value = ''; $('p').value = ''; calc(); }
+function autoC() {
+  const a = num('a'), b = num('b');
+  if (a == null || b == null || !(a < b)) { showErr('先填好起涨点与高点'); return; }
+  $('c').value = (b - (b - a) * 0.618).toFixed(2);
+  calc();
+}
+function showErr(t) { const e = $('err'); e.textContent = t; e.style.display = 'block'; }
+function hideErr() { $('err').style.display = 'none'; }
+
+function calc() {
+  hideErr();
+  $('cardEmpty').style.display = 'none';
+  const A = num('a'), B = num('b');
+  if (A == null || B == null) return showErr('至少填写起涨点 A 与波段高点 B');
+  if (!(A < B)) return showErr('起涨点必须小于波段高点');
+
+  const P = num('p');
+  const up = B - A;
+
+  /* 回撤支撑位：只依赖 A、B，永远输出 */
+  renderFib(A, B, P);
+
+  let C = num('c');
+  if (C == null) return retraceOnly(A, B, P);
+  if (!(C > A && C < B)) return showErr('回调低点应介于起涨点与高点之间');
+  const drop = B - C;
+  let D = num('d');
+  const autoD = (D == null);
+  if (autoD) D = C + drop * 0.618;
+  if (!(D > C)) return showErr('反弹高点应高于回调低点（可留空自动计算）');
+
+  const L = [];
+  const push = (p, label, w, kind) => L.push({ p, label, w, kind });
+
+  /* 1) 大波段回撤 —— 下方支撑 */
+  [[0.236, 1, '0.236'], [0.382, 1.5, '0.382'], [0.5, 2, '0.5'], [0.618, 2.5, '0.618'],
+   [0.75, 1.5, '0.75'], [0.786, 2, '0.786'], [0.809, 1.5, '0.809']]
+    .forEach(([r, w, t]) => push(B - up * r, '大波段 ' + t + ' 回撤', w, 'sup'));
+  push(A, '起涨点 / 大波段 1.0', 4.5, 'sup');
+  push(C, '前低（本次回调低点）', 3, 'sup');
+
+  /* 2) 下跌段反弹 —— 上方压力 */
+  [[0.382, 1, '0.382'], [0.5, 1.5, '0.5'], [0.618, 2.5, '0.618'], [0.786, 1, '0.786']]
+    .forEach(([r, w, t]) => push(C + drop * r, '下跌段 ' + t + ' 反弹', w, 'res'));
+  push(B, '前高 / 起跌点（下跌段 1.0）', 3.5, 'res');
+
+  /* 3) 向上扩展 */
+  [[1.272, 1.5, '1.272'], [1.382, 1, '1.382'], [1.618, 1.5, '1.618']]
+    .forEach(([k, w, t]) => push(C + drop * k, t + ' 扩展位（前高之上）', w, 'ext'));
+
+  /* 4) 反弹失败后的回落支撑 */
+  const leg = D - C;
+  [[0.382, 1, '0.382'], [0.5, 1.5, '0.5'], [0.618, 2, '0.618']]
+    .forEach(([r, w, t]) => push(D - leg * r, '回落 ' + t + '（自 D 起）', w, 'sup'));
+  [[0.618, 1.5, '0.618'], [1.0, 2.5, '1.0'], [1.272, 1.5, '1.272'], [1.618, 1, '1.618']]
+    .forEach(([k, w, t]) => push(D - drop * k, 'AB 段向下投射 ' + t, w, 'sup'));
+
+  /* 聚类：把相近的价位合成一条“带” */
+  L.sort((x, y) => y.p - x.p);
+  const TOL = 0.012;
+  const zones = [];
+  L.forEach(l => {
+    const z = zones[zones.length - 1];
+    if (z && Math.abs(z.mean - l.p) / z.mean <= TOL) {
+      z.items.push(l); z.sum += l.w;
+      z.mean = z.items.reduce((s, i) => s + i.p, 0) / z.items.length;
+    } else {
+      const nz = { mean: l.p, items: [l], sum: l.w };
+      zones.push(nz);
+    }
+    l.zone = zones[zones.length - 1];
+  });
+  const star = s => (s >= 6.5 ? 5 : s >= 4.5 ? 4 : s >= 3 ? 3 : s >= 1.8 ? 2 : 1);
+
+  /* ---------- 结构判读 ---------- */
+  const reboundRatio = leg / drop;
+  const near = P == null ? null : (p, v) => Math.abs(p - v) / v < 0.012;
+  let txt = '';
+  txt += '波段 <b>' + fmt(A) + ' → ' + fmt(B) + '</b>，涨幅 ' + (up / A * 100).toFixed(2) + '%，' +
+    '回调至 <span class="k">' + fmt(C) + '</span>（大波段 ' + ((B - C) / up * 100).toFixed(2) + '% 回撤）。<br>';
+  txt += '反弹高点 <span class="r">' + fmt(D) + '</span>' + (autoD ? '（自动取下跌段 0.618）' : '') +
+    '，相当于收回下跌段的 <b>' + (reboundRatio * 100).toFixed(0) + '%</b>。';
+  if (reboundRatio < 0.45) txt += ' 反弹偏弱，<b>属于典型下跌中继</b>，前低 ' + fmt(C) + ' 是生死线。';
+  else if (reboundRatio < 0.66) txt += ' 反弹到 0.5~0.618 一带，<b>最常见的“反弹即终点”区域</b>，不放量突破前高就只能算反弹。';
+  else if (reboundRatio < 0.95) txt += ' 反弹较强但未创新高，<b>前高 ' + fmt(B) + ' 是硬压力</b>。';
+  else txt += ' 已回到前高附近，结构由反弹转为<b>反转测试</b>，看能否放量站上 ' + fmt(B) + '。';
+  $('judge').innerHTML = txt;
+
+  const zc = [];
+  zc.push(['波段涨幅', (up / A * 100).toFixed(2) + '%']);
+  zc.push(['回调幅度', ((B - C) / up * 100).toFixed(2) + '%（' + fmt(drop) + ' 元）']);
+  if (P != null) zc.push(['现价距前低', pct(P, C).toFixed(2) + '%']);
+  $('chips').innerHTML = zc.map(([k, v]) => '<span class="chip">' + k + ' <b>' + v + '</b></span>').join('');
+  $('cardJudge').style.display = 'block';
+
+  /* ---------- 图表 ---------- */
+  drawChart(A, B, C, D);
+  $('legend').innerHTML = '<span><i class="dot" style="background:#ef6b6b"></i>压力位</span>' +
+    '<span><i class="dot" style="background:#3fcf9a"></i>支撑位</span>' +
+    '<span><i class="dot" style="background:#e8b34a"></i>重叠区 ★越多越强</span>';
+  $('cardChart').style.display = 'block';
+
+  /* ---------- 重叠区 ---------- */
+  const hot = zones.filter(z => z.items.length >= 2).sort((x, y) => y.mean - x.mean);
+  if (hot.length) {
+    $('zones').innerHTML = hot.slice(0, 8).map(z => {
+      const main = z.items.reduce((a, b) => (b.w > a.w ? b : a), z.items[0]);
+      const kinds = z.items.map(i => i.label);
+      const sign = P == null ? '' : '（' + (pct(main.p, P) > 0 ? '+' : '') + pct(main.p, P).toFixed(2) + '%）';
+      const ps = z.items.map(i => i.p), lo2 = Math.min.apply(null, ps), hi2 = Math.max.apply(null, ps);
+      const wide = (hi2 - lo2) / main.p > 0.003;
+      const ptext = wide ? fmt(lo2) + '–' + fmt(hi2) : fmt(main.p);
+      const pstyle = wide ? ' style="font-size:13px;letter-spacing:-0.3px"' : '';
+      return '<div class="zone"><span class="zp"' + pstyle + '>' + ptext + '</span>' +
+        '<span class="zi">' + z.items.length + ' 项指向 ' + sign + '<br>' +
+        kinds.slice(0, 3).join(' · ') + (kinds.length > 3 ? ' 等' : '') + '</span>' +
+        '<span class="zs">' + '★'.repeat(star(z.sum)) + '</span></div>';
+    }).join('');
+    $('cardZones').style.display = 'block';
+  } else $('cardZones').style.display = 'none';
+
+  /* ---------- 价格阶梯 ---------- */
+  const rows = [];
+  L.forEach(l => {
+    const last = rows[rows.length - 1];
+    if (last && Math.abs(last.p - l.p) / l.p < 0.003) {
+      if (last.labels.indexOf(l.label) < 0) last.labels.push(l.label);
+      if (l.zone.sum > last.sum) { last.sum = l.zone.sum; last.hot = l.zone.items.length >= 2; }
+    } else {
+      rows.push({ p: l.p, labels: [l.label], kind: l.kind, sum: l.zone.sum, hot: l.zone.items.length >= 2 });
+    }
+  });
+  $('ladder').innerHTML = rows.map(r => {
+    let d = '';
+    if (P != null) { const v = pct(r.p, P); d = (v > 0 ? '+' : '') + v.toFixed(2) + '%'; }
+    return '<div class="lv ' + r.kind + (r.hot ? ' hot' : '') + '">' +
+      '<div class="price">' + fmt(r.p) + '</div>' +
+      '<div class="meta"><span class="t">' + r.labels.join(' · ') + '</span>' +
+      (d ? '<span class="d">' + d + '</span>' : '') + '</div>' +
+      '<div class="st">' + '★'.repeat(star(r.sum)) + '</div></div>';
+  }).join('');
+  $('cardLadder').style.display = 'block';
+
+  STATE = { A, B, C, D, P, levels: L, zones };
+  renderTime();
+}
+
+/* ---------- 回撤支撑位（仅需 A、B） ---------- */
+const FIBR = [0.236, 0.382, 0.5, 0.618, 0.75, 0.786, 0.809, 1.0];
+const FIBKEY = [0.5, 0.618, 1.0];
+const RS = r => (r === 1 ? '1.0' : String(r));
+
+function renderFib(A, B, P) {
+  const up = B - A;
+  $('fibList').innerHTML = FIBR.map(r => {
+    const p = B - up * r;
+    const fromTop = (p - B) / B * 100;
+    const fromP = P == null ? '—' : (pct(p, P) > 0 ? '+' : '') + pct(p, P).toFixed(2) + '%';
+    const key = FIBKEY.indexOf(r) >= 0;
+    return '<div class="fib' + (key ? ' key' : '') + '">' +
+      '<span class="r">' + RS(r) + '</span>' +
+      '<span class="p">' + fmt(p) + '</span>' +
+      '<span class="a">' + fromTop.toFixed(2) + '%</span>' +
+      '<span class="a">' + fromP + '</span></div>';
+  }).join('');
+  $('cardFib').style.display = 'block';
+  return { l382: B - up * 0.382, l5: B - up * 0.5, l618: B - up * 0.618 };
+}
+
+function retraceOnly(A, B, P) {
+  STATE = null;
+  const up = B - A, f = renderFib(A, B, P);
+  const txt = '波段 <b>' + fmt(A) + ' → ' + fmt(B) + '</b>，涨幅 ' + (up / A * 100).toFixed(2) + '%（' + fmt(up) + ' 元）。<br>' +
+    '下方回撤支撑：0.382 在 <span class="k">' + fmt(f.l382) + '</span>，0.5 在 <span class="k">' + fmt(f.l5) + '</span>，' +
+    '0.618 在 <span class="k">' + fmt(f.l618) + '</span>，1.0 即起涨点 <b>' + fmt(A) + '</b>。<br>' +
+    '<b>0.5 与 0.618（' + fmt(f.l618) + '~' + fmt(f.l5) + '）是最常见的止跌区</b>，跌破起涨点则整个波段结构作废。' +
+    '<br><span style="color:#6d7688;font-size:12px">填入「回调低点 C」可解锁反弹压力、向下投射和重叠区分析。</span>';
+  $('judge').innerHTML = txt;
+  $('chips').innerHTML = [['波段涨幅', (up / A * 100).toFixed(2) + '%'], ['振幅', fmt(up) + ' 元'],
+    ['0.5 位', fmt(f.l5)], ['0.618 位', fmt(f.l618)]]
+    .map(([k, v]) => '<span class="chip">' + k + ' <b>' + v + '</b></span>').join('');
+  $('cardJudge').style.display = 'block';
+  drawFibChart(A, B, P);
+  $('legend').innerHTML = '<span><i class="dot" style="background:#e8b34a"></i>关键回撤位</span>' +
+    '<span><i class="dot" style="background:#3fcf9a"></i>次要回撤位</span>' +
+    '<span><i class="dot" style="background:#b98cf0"></i>现价</span>';
+  $('cardChart').style.display = 'block';
+  $('cardZones').style.display = 'none';
+  $('cardLadder').style.display = 'none';
+  renderTime();
+}
+
+function drawFibChart(A, B, P) {
+  const W = 340, H = 215, padT = 18, padB = 18, padR = 86, padL = 12;
+  $('chart').setAttribute('viewBox', '0 0 340 215');
+  const up = B - A;
+  const hi = B + up * 0.14, lo = A - up * 0.12;
+  const Y = p => padT + (hi - p) / (hi - lo) * (H - padT - padB);
+  const x1 = padL + 24, x2 = padL + 92;
+  let s = '';
+  s += '<line x1="' + x1 + '" y1="' + Y(A) + '" x2="' + x2 + '" y2="' + Y(B) +
+    '" stroke="#e8b34a" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>';
+  s += '<circle cx="' + x1 + '" cy="' + Y(A) + '" r="4" fill="#0b0e14" stroke="#e8b34a" stroke-width="2"/>';
+  s += '<circle cx="' + x2 + '" cy="' + Y(B) + '" r="4" fill="#0b0e14" stroke="#e8b34a" stroke-width="2"/>';
+  s += '<text x="' + x1 + '" y="' + (Y(A) + 16) + '" fill="#98a2b4" font-size="10" text-anchor="middle">A ' + fmt(A) + '</text>';
+  s += '<text x="' + x2 + '" y="' + (Y(B) - 10) + '" fill="#98a2b4" font-size="10" text-anchor="middle">B ' + fmt(B) + '</text>';
+
+  /* 先画线 */
+  const LAB = [0.236, 0.382, 0.5, 0.618, 0.786, 1.0];
+  FIBR.forEach(r => {
+    const p = B - up * r, y = Y(p), key = FIBKEY.indexOf(r) >= 0;
+    const col = key ? '#e8b34a' : '#3fcf9a';
+    s += '<line x1="' + (padL + 4) + '" y1="' + y + '" x2="' + (W - padR + 2) + '" y2="' + y +
+      '" stroke="' + col + '" stroke-width="1" stroke-dasharray="' + (key ? '0' : '3 4') +
+      '" opacity="' + (key ? '0.5' : '0.22') + '"/>';
+  });
+  if (P != null && P > lo && P < hi) {
+    const y = Y(P);
+    s += '<line x1="' + (padL + 4) + '" y1="' + y + '" x2="' + (W - padR + 2) + '" y2="' + y +
+      '" stroke="#b98cf0" stroke-width="1.4" opacity="0.9"/>';
+  }
+
+  /* 再排标签，避免重叠 */
+  const items = LAB.map(r => {
+    const p = B - up * r;
+    return { text: RS(r) + ' ' + fmt(p), y: Y(p), col: FIBKEY.indexOf(r) >= 0 ? '#e8b34a' : '#3fcf9a', cur: false };
+  });
+  if (P != null && P > lo && P < hi) items.push({ text: '现价 ' + fmt(P), y: Y(P), col: '#b98cf0', cur: true });
+  items.sort((a, b) => a.y - b.y);
+  const GAP = 12.5, TOP = padT + 6, BOT = H - padB + 2;
+  for (let i = 0; i < items.length; i++) {
+    if (i === 0) items[i].ly = Math.max(items[i].y, TOP);
+    else items[i].ly = Math.max(items[i].y, items[i - 1].ly + GAP);
+  }
+  for (let i = items.length - 1; i >= 0; i--) {
+    if (i === items.length - 1) items[i].ly = Math.min(items[i].ly, BOT);
+    else items[i].ly = Math.min(items[i].ly, items[i + 1].ly - GAP);
+  }
+  items.forEach(it => {
+    const x0 = W - padR + 2;
+    if (Math.abs(it.ly - it.y) > 0.5) {
+      s += '<line x1="' + x0 + '" y1="' + it.y + '" x2="' + (x0 + 5) + '" y2="' + it.ly +
+        '" stroke="' + it.col + '" stroke-width="0.8" opacity="0.45"/>';
+    }
+    s += '<text x="' + (x0 + 7) + '" y="' + (it.ly + 3.5) + '" fill="' + it.col +
+      '" font-size="' + (it.cur ? '10' : '9.8') + '" font-family="system-ui">' + it.text + '</text>';
+  });
+  $('chart').innerHTML = s;
+}
+
+/* ---------- SVG 走势示意 ---------- */
+function drawChart(A, B, C, D) {
+  const W = 340, H = 190, padT = 12, padB = 12, padR = 76;
+  $('chart').setAttribute('viewBox', '0 0 340 190');
+  const lo = Math.min(A, B, C, D), hi = Math.max(A, B, C, D);
+  const span = (hi - lo) || 1;
+  const ylo = lo - span * 0.14, yhi = hi + span * 0.14;
+  const Y = p => padT + (yhi - p) / (yhi - ylo) * (H - padT - padB);
+  const xs = [26, 100, 172, 244];
+  const pts = [[xs[0], Y(A)], [xs[1], Y(B)], [xs[2], Y(C)], [xs[3], Y(D)]];
+
+  let s = '';
+  s += '<polyline points="' + pts.map(p => p[0] + ',' + p[1]).join(' ') +
+    '" fill="none" stroke="#e8b34a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>';
+  const marks = [[B, '前高', '#ef6b6b'], [D, '反弹', '#ef6b6b'], [C, '前低', '#3fcf9a'], [A, '起涨', '#3fcf9a']];
+  marks.forEach(([p, label, col]) => {
+    const y = Y(p);
+    s += '<line x1="6" y1="' + y + '" x2="' + (W - padR + 2) + '" y2="' + y +
+      '" stroke="' + col + '" stroke-width="1" stroke-dasharray="4 3" opacity="0.45"/>';
+    s += '<text x="' + (W - padR + 8) + '" y="' + (y + 4) + '" fill="' + col +
+      '" font-size="10.5" font-family="system-ui">' + label + ' ' + fmt(p) + '</text>';
+  });
+  const names = ['A', 'B', 'C', 'D'];
+  pts.forEach((p, i) => {
+    s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#0b0e14" stroke="#e8b34a" stroke-width="2"/>';
+    const dy = (i === 1 || i === 0) ? -9 : 15;
+    s += '<text x="' + p[0] + '" y="' + (p[1] + dy) + '" fill="#98a2b4" font-size="10" text-anchor="middle" font-family="system-ui">' + names[i] + '</text>';
+  });
+  // 若 D 低于 B：用虚线暗示反弹失败
+  if (D < B) {
+    s += '<line x1="' + pts[2][0] + '" y1="' + pts[2][1] + '" x2="' + pts[3][0] + '" y2="' + pts[3][1] +
+      '" stroke="#e8b34a" stroke-width="2" stroke-dasharray="0" opacity="0"/>';
+  }
+  $('chart').innerHTML = s;
+}
+
+$('cardEmpty').style.display = 'block';
+
+</script>
+<script>
+/* ================= 时间维度 · 变盘窗口 ================= */
+let TF = 'd';
+let STATE = null;
+
+const TFCFG = {
+  '15': { bar: 15, bpd: 16, name: '15分钟' },
+  '30': { bar: 30, bpd: 8, name: '30分钟' },
+  '60': { bar: 60, bpd: 4, name: '60分钟' },
+  'd': { bar: 0, bpd: 1, name: '日' },
+  'w': { bar: 0, bpd: 0.2, name: '周' }
+};
+
+function setTF(t) {
+  TF = t;
+  document.querySelectorAll('#tfSeg button').forEach(b => b.classList.toggle('on', b.dataset.tf === t));
+  renderTime();
+}
+
+/* 一天内各根 K 的收盘时刻（分钟数）*/
+function dayCloses(barMin) {
+  const out = [];
+  [[570, 690], [780, 900]].forEach(se => {
+    for (let m = se[0] + barMin; m <= se[1]; m += barMin) out.push(m);
+  });
+  return out;
+}
+
+/* 从某一根 K 的收盘时刻起，往后数 n 根的时刻 */
+function futureCloses(start, tf, n) {
+  const res = [], cfg = TFCFG[tf];
+  let guard = 0;
+  if (tf === 'd' || tf === 'w') {
+    let d = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    while (res.length < n && guard++ < 500) {
+      d.setDate(d.getDate() + (tf === 'w' ? 7 : 1));
+      if (tf === 'd' && (d.getDay() === 0 || d.getDay() === 6)) continue;
+      res.push(new Date(d));
+    }
+    return res;
+  }
+  let day = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  let cur = start.getHours() * 60 + start.getMinutes();
+  let first = true;
+  while (res.length < n && guard++ < 500) {
+    for (const m of dayCloses(cfg.bar)) {
+      if (first && m <= cur) continue;
+      res.push(new Date(day.getFullYear(), day.getMonth(), day.getDate(), Math.floor(m / 60), m % 60));
+      if (res.length >= n) break;
+    }
+    first = false;
+    day.setDate(day.getDate() + 1);
+    while (day.getDay() === 0 || day.getDay() === 6) day.setDate(day.getDate() + 1);
+  }
+  return res;
+}
+
+function fmtTime(d, tf) {
+  const pad = x => String(x).padStart(2, '0');
+  const md = (d.getMonth() + 1) + '/' + d.getDate();
+  if (tf === '15' || tf === '30' || tf === '60') return md + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  return md + ' 周' + '日一二三四五六'[d.getDay()];
+}
+
+const RATIOS = [[0.382, '0.382'], [0.5, '0.5'], [0.618, '0.618'], [0.786, '0.786'],
+  [1, '1.0'], [1.272, '1.272'], [1.382, '1.382'], [1.618, '1.618']];
+
+function nearRatio(r) {
+  let best = RATIOS[0], bd = 9;
+  RATIOS.forEach(p => { const d = Math.abs(r - p[0]); if (d < bd) { bd = d; best = p; } });
+  return { t: best[1], d: bd, ok: bd <= 0.06 };
+}
+
+function nearestLevel(p) {
+  if (!STATE || !STATE.levels) return null;
+  let best = null, bd = 1e9;
+  STATE.levels.forEach(l => { const d = Math.abs(l.p - p) / p; if (d < bd) { bd = d; best = l; } });
+  return best && bd < 0.009 ? best : null;
+}
+
+function renderTime() {
+  const cfg = TFCFG[TF], out = $('timeOut');
+  const n1 = parseFloat($('n1').value), n2 = parseFloat($('n2').value);
+  const n3 = parseFloat($('n3').value) || 0;
+  if (!(n1 > 0) || !(n2 > 0)) {
+    out.innerHTML = '<p class="hint" style="margin-top:10px">填「上涨段」「下跌段」各用了几根' +
+      cfg.name + 'K 线即可。' + (TF === '15' || TF === '30' || TF === '60'
+        ? '一天 = ' + cfg.bpd + ' 根。' : '') + '</p>';
+    return;
+  }
+  const usedBars = n2 + n3;
+  const budget = usedBars / n1;
+  const r1 = n2 / n1, r2 = n3 > 0 ? n3 / n2 : null;
+  const a1 = nearRatio(r1), a2 = r2 == null ? null : nearRatio(r2);
+  const toDays = v => (v / cfg.bpd).toFixed(1);
+
+  let s = '';
+  s += '<div class="chips" style="margin:10px 0">';
+  s += '<span class="chip">下跌/上涨 <b>' + r1.toFixed(3) + '</b> ' + (a1.ok ? '≈' + a1.t + ' ✓' : '偏离') + '</span>';
+  if (a2) s += '<span class="chip">反弹/下跌 <b>' + r2.toFixed(3) + '</b> ' + (a2.ok ? '≈' + a2.t + ' ✓' : '偏离') + '</span>';
+  s += '<span class="chip">已用 <b>' + usedBars + '</b> / 上涨 ' + n1 + ' 根</span>';
+  s += '</div>';
+
+  s += '<div class="bar"><i style="width:' + Math.min(budget * 100, 100).toFixed(1) + '%"></i></div>';
+  const left = n1 - usedBars;
+  s += '<div style="font-size:11.5px;color:#8b93a5;margin-bottom:12px">时间预算 <b style="color:#e8b34a">' +
+    (budget * 100).toFixed(0) + '%</b>　' +
+    (left > 0 ? '距 1.0 对称位还剩 ' + left + ' 根（≈' + toDays(left) + ' 天）'
+      : '已超过 1.0 对称位 ' + Math.abs(left) + ' 根，进入超时区，需升级周期观察') + '</div>';
+
+  /* 变盘窗口 */
+  const fibs = TF === 'w' ? [3, 5, 8, 13, 21] : [3, 5, 8, 13, 21, 34, 55];
+  const wins = fibs.filter(k => k <= n1 * 1.1).slice(0, 6);
+  const maxK = wins.length ? wins[wins.length - 1] : 1;
+
+  let base = null;
+  const dv = $('dtime').value;
+  if (dv) { const p = new Date(dv); if (!isNaN(p.getTime())) base = p; }
+  const timeline = base ? futureCloses(base, TF, maxK) : null;
+
+  const v = (STATE && STATE.D && STATE.C != null) ? (STATE.B - STATE.C) / n2 : 0;
+
+  s += '<div class="trow" style="background:transparent;padding:0 9px;margin-bottom:2px">' +
+    '<span class="k">窗口</span><span class="tm">D 之后</span>' +
+    '<span class="pr" style="color:#7f8899;font-size:10.5px">等速推算 / 邻近位</span></div>';
+
+  wins.forEach(k => {
+    const tm = (base && timeline && timeline[k - 1]) ? fmtTime(timeline[k - 1], TF) : '第 ' + k + ' 根';
+    let pr = '—', hit = false;
+    if (v > 0) {
+      const p = STATE.D - k * v;
+      const nl = nearestLevel(p);
+      pr = fmt(p);
+      if (nl) { hit = true; pr += '<em>≈ ' + fmt(nl.p) + '</em>'; }
+    }
+    s += '<div class="trow' + (hit ? ' hit' : '') + '"><span class="k">+' + k + '</span>' +
+      '<span class="tm">' + tm + '</span><span class="pr">' + pr + '</span></div>';
+  });
+
+  if (v > 0) {
+    s += '<p class="hint">推算价按「上一段下跌速度」（每根 ' + v.toFixed(3) + ' 元）线性外推，' +
+      '金条 = 正好落在某个价格位上，属于时间与价格共振。<br>' +
+      '实际比推算慢 = 下跌在衰竭，支撑容易守住；比推算快 = 加速下跌，支撑容易破。</p>';
+  } else {
+    s += '<p class="hint">在上方填入 A/B/C/D 的价格后，这里会同时给出每根 K 的等速推算价与命中的支撑位。</p>';
+  }
+
+  out.innerHTML = s;
+}
+
+renderTime();
+
+</script>
+</body>
+</html>
